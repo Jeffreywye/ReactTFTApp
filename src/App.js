@@ -1,24 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
 import './App.css';
+require('dotenv').config();
 
-function App() {
+const App = () => {
+  const [_player, setPlayer] = useState("");
+  const [_search, setSearch] = useState("");
+
+  const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
+  const get_player_request = `/tft/summoner/v1/summoners/by-name/${_search}?api_key=${API_KEY}`;
+  
+  
+  const updateSearch = (event) => {
+    setSearch(event.target.value);
+  }
+  
+  const getPlayerQuery = async (event) => {
+    event.preventDefault();
+    setPlayer(_search);
+    console.log(_player);
+    const player_api_call = await fetch(get_player_request);
+    const player_data = await player_api_call.json();
+    console.log(player_data);
+    setSearch("");
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <form
+        className="search-form"
+        onSubmit={getPlayerQuery}
+      >
+        <input
+          className="search-bar"
+          type="text"
+          value={_search}
+          onChange={updateSearch}
+        />
+        <button
+          className="search-btn"
+          type="submit"
         >
-          Learn React
-        </a>
-      </header>
+          search
+        </button>
+      </form>
     </div>
   );
 }
