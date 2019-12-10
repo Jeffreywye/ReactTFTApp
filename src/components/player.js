@@ -12,9 +12,10 @@ const Player = (props) => {
                     onClick={props.displayMatchOnClick}>
                     See Past 10 Matches
                 </button>
+                
                 {
                     props.display &&
-                    <div className="Matches">
+                    <div className="player-matches">
                         <ul>
                             <li>test</li>
                             <li>test</li>
@@ -22,9 +23,6 @@ const Player = (props) => {
                     </div>
                 }
                 
-            </div>
-            <div className="player-matches">
-
             </div>
         </div>
     );

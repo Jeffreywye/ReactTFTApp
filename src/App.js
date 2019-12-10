@@ -12,22 +12,65 @@ const App = () => {
 
   const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
 
-  async function fetchMatches(listOfMatchIDs){
-    for(let i = 0; i<listOfMatchIDs.length; i++){
-      const matchID = listOfMatchIDs[i];
-      console.log(matchID);
-      const req_match = `/matches/${matchID}?api_key=${API_KEY}`;
-      const matchData = await fetchData(req_match);
-      console.log(matchData);
-      _list_of_matches.push(matchData)
-    }
-    
+  const setMatchDisplayOff = (e) => {
+    setDisplayMatches(false);
+  }
+
+  const toggleMatchDisplay = (e) => {
+    setDisplayMatches(!_display_matches);
   }
 
   async function  fetchData(url){
     const api_call = await fetch(url);
     const data = await api_call.json();
     return data;
+  }
+
+  async function fetchMatches(listOfMatchIDs, playerPUUID){
+    for(let i = 0; i<listOfMatchIDs.length; i++){
+      const matchID = listOfMatchIDs[i];
+      const req_match = `/matches/${matchID}?api_key=${API_KEY}`;
+      const matchData = await fetchData(req_match);
+      _list_of_matches.push(reformatMatchData(matchData, playerPUUID));
+    }
+  }
+
+  // return an obj containing player placement, list of trait objects, damage dealt, and players eliminated
+  function reformatMatchData(matchData, playerPUUID){
+    let ret = {
+      placement : 0,
+      damageDealt : 0,
+      eliminations: 0,
+    }
+    const participants = matchData.info.participants;
+    
+    let player = null;
+    //find desired player in participants
+    for(let i = 0; i<participants.length; i++){
+      if(participants[i].puuid === playerPUUID){
+        player = participants[i];
+      }
+    }
+    ret["damageDealt"] = player.total_damage_to_players;
+    ret["placement"] = player.placement;
+    ret["eliminations"] = player.players_eliminated;
+    ret.traits = reformatTraits(player.traits);
+    return ret;
+  }
+
+  // helper function that returns traits that were active
+  function reformatTraits(traitList){
+    let ret = []
+    for(let i = 0; i<traitList.length; i++){
+      if(traitList[i].tier_current !== 0){
+        let trait = {};
+        trait.name = traitList[i].name.replace("Set2_","");
+        trait.level = traitList[i].tier_current;
+        trait.maxLevel = traitList[i].tier_total;
+        ret.push(trait);
+      }
+    }
+    return ret;
   }
   
   const getPlayerQuery = async (event) => {
@@ -56,19 +99,11 @@ const App = () => {
       let count = 5;
       const req_player_matches = `/by-puuid/${player_data.puuid}/ids?count=${count}&api_key=${API_KEY}`;
       const matchIDS = await fetchData(req_player_matches);
-      console.log(matchIDS);
-      await fetchMatches(matchIDS);
+      await fetchMatches(matchIDS, player_data.puuid);
+      console.log(_list_of_matches);
       setMatchDisplayOff();
     }
     document.getElementById("search-form").reset();
-  }
-
-  const setMatchDisplayOff = (e) => {
-    setDisplayMatches(false);
-  }
-
-  const toggleMatchDisplay = (e) => {
-    setDisplayMatches(!_display_matches);
   }
 
   // rerender will occur 
@@ -98,6 +133,7 @@ const App = () => {
         <div>
           <Player
             data = {_rank_data}
+            matches = {_list_of_matches}
             display = {_display_matches}
             displayMatchOnClick = {toggleMatchDisplay}
           />
