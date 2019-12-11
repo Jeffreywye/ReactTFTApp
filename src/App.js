@@ -7,7 +7,7 @@ const App = () => {
   const [_player_data, setPlayerData] = useState(null);
   const [_rank_data, setRankData] = useState(null);
   const [_display_matches, setDisplayMatches] = useState(true);
-  var _list_of_matches = [];
+  const [_list_of_matches, setListOfMatches] = useState(null);
   var _search = "";
 
   const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
@@ -27,12 +27,15 @@ const App = () => {
   }
 
   async function fetchMatches(listOfMatchIDs, playerPUUID){
+    let temp = []
     for(let i = 0; i<listOfMatchIDs.length; i++){
       const matchID = listOfMatchIDs[i];
       const req_match = `/matches/${matchID}?api_key=${API_KEY}`;
       const matchData = await fetchData(req_match);
-      _list_of_matches.push(reformatMatchData(matchData, playerPUUID));
+      temp.push(reformatMatchData(matchData, playerPUUID));
     }
+    // replace old list with new list of matches
+    setListOfMatches(temp);
   }
 
   // return an obj containing player placement, list of trait objects, damage dealt, and players eliminated
@@ -43,7 +46,7 @@ const App = () => {
       eliminations: 0,
     }
     const participants = matchData.info.participants;
-    
+    ret.matchID = matchData.metadata.match_id;
     let player = null;
     //find desired player in participants
     for(let i = 0; i<participants.length; i++){
@@ -91,17 +94,16 @@ const App = () => {
     //valid rank player
     else {
       // clear prev player list of matches
-      _list_of_matches = [];
-      setPlayerData(player_data);
-      setRankData(rank_data[0]);
+      // _list_of_matches = [];
 
       // fetch list of matchIDS
       let count = 5;
       const req_player_matches = `/by-puuid/${player_data.puuid}/ids?count=${count}&api_key=${API_KEY}`;
       const matchIDS = await fetchData(req_player_matches);
       await fetchMatches(matchIDS, player_data.puuid);
-      console.log(_list_of_matches);
       setMatchDisplayOff();
+      setPlayerData(player_data);
+      setRankData(rank_data[0]);
     }
     document.getElementById("search-form").reset();
   }
