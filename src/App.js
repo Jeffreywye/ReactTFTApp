@@ -8,6 +8,8 @@ const App = () => {
   const [_rank_data, setRankData] = useState(null);
   const [_display_matches, setDisplayMatches] = useState(true);
   const [_list_of_matches, setListOfMatches] = useState(null);
+  const [_display_meta, setDisplayMeta] = useState(false);
+  const [_meta_data_retrived, setMetaDataRetrieved] = useState(false);
   var _search = "";
 
   const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
@@ -93,7 +95,6 @@ const App = () => {
 
     //valid rank player
     else {
-
       // fetch list of matchIDS
       let count = 5;
       const req_player_matches = `/by-puuid/${player_data.puuid}/ids?count=${count}&api_key=${API_KEY}`;
