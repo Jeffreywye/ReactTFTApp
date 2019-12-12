@@ -93,8 +93,6 @@ const App = () => {
 
     //valid rank player
     else {
-      // clear prev player list of matches
-      // _list_of_matches = [];
 
       // fetch list of matchIDS
       let count = 5;
@@ -112,27 +110,31 @@ const App = () => {
   // whenever a state or prop value changes
   return (
     <div className="App">
-      <form
-        id="search-form"
-        onSubmit={getPlayerQuery}
-      >
-        <input
-          className="search-bar"
-          type="text"
-          name = "PlayerName"
-        />
-        <button
-          className="search-btn"
-          type="submit"
+      <div className="d-flex justify-content-center my-2">
+        <form
+          className="form-inline"
+          id="search-form"
+          onSubmit={getPlayerQuery}
         >
-          search
-        </button>
-      </form>
+          <input
+            className="search-bar form-control"
+            type="text"
+            name= "PlayerName"
+            placeholder="Search TFT NA Player"
+          />
+          <button
+            className="search-btn btn btn-primary"
+            type="submit"
+          >
+            search
+          </button>
+        </form>
+      </div>
       
       { 
         // render player component when _search is not null
         _rank_data &&
-        <div>
+        <div className="container">
           <Player
             data = {_rank_data}
             matches = {_list_of_matches}
