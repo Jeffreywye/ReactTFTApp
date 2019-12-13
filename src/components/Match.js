@@ -45,19 +45,38 @@ const Match = (props) => {
                     <div>Damage Dealt : {props.data.damageDealt}</div>
                 </div>
                 
-                <div className="traits-container align-self-center d-flex flex-row flex-wrap pl-3">Traits: 
-                    {props.data.traits.map(
-                        (trait, index, arr) => {
-                            return(
-                                <div
-                                    className="trait pl-2" 
-                                    key={trait.name}
-                                >{trait.name} {trait.level}
-                                </div>
-                            )
-                        }
-                    )}
+                <div className="units-and-traits-info d-flex flex-column">
+                    <div className="traits-container d-flex flex-row flex-wrap pl-3">Traits: 
+                        {props.data.traits.map(
+                            (trait, index, arr) => {
+                                return(
+                                    <div
+                                        className="trait pl-2" 
+                                        key={trait.name}
+                                    >{trait.name} {trait.level}
+                                    </div>
+                                )
+                            }
+                        )}
+                    </div>
+
+                    <div className="units-container d-flex flex-row flex-wrap pl-3">Units: 
+                        {props.data.units.map(
+                            (unit, index, arr) => {
+                                let key_val = unit+" "+index;
+                                return(
+                                    <div
+                                        className="unit pl-2" 
+                                        key={key_val}
+                                    >{unit}
+                                    </div>
+                                )
+                            }
+                        )}
+                    </div>
                 </div>
+
+                
             </div>
             }
         </div>

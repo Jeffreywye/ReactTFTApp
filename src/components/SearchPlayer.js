@@ -18,6 +18,7 @@ const SearchPlayer = (props) => {
             <button
                 className="search-btn btn btn-primary"
                 type="submit"
+                disabled = {props.disabled}
             >
                 search
             </button>
