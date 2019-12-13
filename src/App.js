@@ -54,7 +54,6 @@ const App = () => {
 
   async function fetchData(url){
     const api_call = await fetch(url);
-    console.log(api_call);
     const data = await api_call.json();
     return data;
   }
@@ -66,7 +65,6 @@ const App = () => {
 
   async function fetchPlayerDataByName(name){
     const get_player_request = `/summoner/v1/summoners/by-name/${name}?api_key=${API_KEY}`;
-    console.log(get_player_request);
     return await fetchData(get_player_request);
   }
 
@@ -171,7 +169,6 @@ const App = () => {
     event.preventDefault();
     _search = event.target.children.PlayerName.value;
     const player_data = await fetchPlayerDataByName(_search);
-    console.log(player_data);
     // fetch Player rank from API
     const rank_data = await fetchPlayerRankDataByID(player_data.id);
     // valid rank data is returned as an array
@@ -229,7 +226,6 @@ const App = () => {
     const metaData = convertTraitsAndUnitsObjListToMetaData(traitsAndUnitsObjList);
     const sortedMetaData = sortMetaData(metaData);
     sortedMetaData.topFourPlayers = topPlaceMentsList.length;
-    console.log(sortedMetaData);
   
     // let endTime = performance.now();
     // console.log("THIS WHOLE PROCESS TOOK "+(endTime-startTime)+" ms");
