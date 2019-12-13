@@ -20,7 +20,7 @@ const App = () => {
   var _search = "";
 
   const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
-  console.log(API_KEY);
+  
   async function sleep(ms) {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
@@ -55,6 +55,7 @@ const App = () => {
   async function fetchData(url){
     const api_call = await fetch(url);
     const data = await api_call.json();
+    console.log(data);
     return data;
   }
 
@@ -65,6 +66,7 @@ const App = () => {
 
   async function fetchPlayerDataByName(name){
     const get_player_request = `/summoner/v1/summoners/by-name/${name}?api_key=${API_KEY}`;
+    console.log(get_player_request);
     return await fetchData(get_player_request);
   }
 
@@ -169,7 +171,7 @@ const App = () => {
     event.preventDefault();
     _search = event.target.children.PlayerName.value;
     const player_data = await fetchPlayerDataByName(_search);
-
+    console.log(player_data);
     // fetch Player rank from API
     const rank_data = await fetchPlayerRankDataByID(player_data.id);
     // valid rank data is returned as an array
