@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
-import Player from "./components/Player";
 import './App.css';
+import Player from "./components/Player";
+import SearchPlayer from './components/SearchPlayer';
+import MetaTier from './components/MetaTier';
 require('dotenv').config();
 
 const App = () => {
@@ -22,18 +24,58 @@ const App = () => {
     setDisplayMatches(!_display_matches);
   }
 
-  async function  fetchData(url){
+  const toggleMetaTierDisplay = (e) => {
+    //if should only be ran once!
+    //if meta data was not retrieved initially
+    if(!_meta_data_retrived){
+      console.log("I should be ran once");
+      //retrived so set true
+      setMetaDataRetrieved(true);
+    }
+    setDisplayMeta(!_display_meta);
+  }
+
+  async function fetchData(url){
     const api_call = await fetch(url);
     const data = await api_call.json();
     return data;
   }
 
-  async function fetchMatches(listOfMatchIDs, playerPUUID){
+  async function fetchChallengerPlayers(){
+    const req_challenger_players = `/league/v1/challenger?api_key=${API_KEY}`;
+    return await fetchData(req_challenger_players); 
+  }
+
+  async function fetchPlayerDataByName(name){
+    const get_player_request = `/summoner/v1/summoners/by-name/${name}?api_key=${API_KEY}`;
+    return await fetchData(get_player_request);
+  }
+
+  async function fetchPlayerDataByID(id){
+    const req_player_by_id = `/summoner/v1/summoners/${id}?api_key=${API_KEY}`;
+    return await fetchData(req_player_by_id);
+  }
+
+  async function fetchPlayerRankDataByID(id){
+    const req_player_rank = `/league/v1/entries/by-summoner/${id}?api_key=${API_KEY}`;
+    return await fetchData(req_player_rank);
+  }
+
+  async function fetchPlayerMatchListByPID(puuid, count){
+    const req_player_matches = `/by-puuid/${puuid}/ids?count=${count}&api_key=${API_KEY}`;
+    return await fetchData(req_player_matches);
+  }
+
+  async function fetchMatchData(matchID){
+    const req_match = `/matches/${matchID}?api_key=${API_KEY}`;
+    return await fetchData(req_match);
+  }
+
+  async function setReformatedMatches(listOfMatchIDs, playerPUUID){
     let temp = []
     for(let i = 0; i<listOfMatchIDs.length; i++){
       const matchID = listOfMatchIDs[i];
-      const req_match = `/matches/${matchID}?api_key=${API_KEY}`;
-      const matchData = await fetchData(req_match);
+      const matchData = await fetchMatchData(matchID);
       temp.push(reformatMatchData(matchData, playerPUUID));
     }
     // replace old list with new list of matches
@@ -81,12 +123,10 @@ const App = () => {
   const getPlayerQuery = async (event) => {
     event.preventDefault();
     _search = event.target.children.PlayerName.value;
-    const get_player_request = `/summoner/v1/summoners/by-name/${_search}?api_key=${API_KEY}`;
-    const player_data = await fetchData(get_player_request);
+    const player_data = await fetchPlayerDataByName(_search);
 
     // fetch Player rank from API
-    const req_player_rank = `/league/v1/entries/by-summoner/${player_data.id}?api_key=${API_KEY}`;
-    const rank_data = await fetchData(req_player_rank);
+    const rank_data = await fetchPlayerRankDataByID(player_data.id);
     // valid rank data is returned as an array
     // invalid requests for rank_data returns a json obj
     if (rank_data.length === 0 || !Array.isArray(rank_data) ){
@@ -95,11 +135,11 @@ const App = () => {
 
     //valid rank player
     else {
-      // fetch list of matchIDS
+      // fetch list of matchIDS given the amount and player puuid
       let count = 5;
-      const req_player_matches = `/by-puuid/${player_data.puuid}/ids?count=${count}&api_key=${API_KEY}`;
-      const matchIDS = await fetchData(req_player_matches);
-      await fetchMatches(matchIDS, player_data.puuid);
+      const matchIDS = await fetchPlayerMatchListByPID(player_data.puuid, count);
+
+      await setReformatedMatches(matchIDS, player_data.puuid);
       setMatchDisplayOff();
       setPlayerData(player_data);
       setRankData(rank_data[0]);
@@ -111,39 +151,27 @@ const App = () => {
   // whenever a state or prop value changes
   return (
     <div className="App">
-      <div className="d-flex justify-content-center my-2">
-        <form
-          className="form-inline"
-          id="search-form"
-          onSubmit={getPlayerQuery}
-        >
-          <input
-            className="search-bar form-control"
-            type="text"
-            name= "PlayerName"
-            placeholder="Search TFT NA Player"
-          />
-          <button
-            className="search-btn btn btn-primary"
-            type="submit"
-          >
-            search
-          </button>
-        </form>
-      </div>
+      <SearchPlayer
+        onSubmit={getPlayerQuery}
+      />
       
       { 
-        // render player component when _search is not null
-        _rank_data &&
-        <div className="container">
-          <Player
-            data = {_rank_data}
-            matches = {_list_of_matches}
-            display = {_display_matches}
-            displayMatchOnClick = {toggleMatchDisplay}
-          />
-        </div>
+      // render player component when _search is not null
+      _rank_data &&
+      <div className="container">
+        <Player
+          data = {_rank_data}
+          matches = {_list_of_matches}
+          display = {_display_matches}
+          displayMatchOnClick = {toggleMatchDisplay}
+        />
+      </div>
       }
+
+      <MetaTier
+        onClick={toggleMetaTierDisplay}
+        displayValue = {_display_meta}
+      />
     </div>
   );
 }
