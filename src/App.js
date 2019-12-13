@@ -54,6 +54,7 @@ const App = () => {
 
   async function fetchData(url){
     const api_call = await fetch(url);
+    console.log(api_call);
     const data = await api_call.json();
     console.log(data);
     return data;
