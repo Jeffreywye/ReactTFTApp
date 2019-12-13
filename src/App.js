@@ -20,7 +20,7 @@ const App = () => {
   var _search = "";
 
   const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
-
+  console.log(API_KEY);
   async function sleep(ms) {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
