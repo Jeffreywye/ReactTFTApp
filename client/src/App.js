@@ -3,7 +3,6 @@ import './App.css';
 import Player from "./components/Player";
 import SearchPlayer from './components/SearchPlayer';
 import MetaTier from './components/MetaTier';
-require('dotenv').config();
 
 const App = () => {
   const [_player_data, setPlayerData] = useState(null);
@@ -18,8 +17,6 @@ const App = () => {
   const [_progress_percent, setProgressPercent] = useState(0);
 
   var _search = "";
-
-  const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
   
   async function sleep(ms) {
     return new Promise(resolve => {
@@ -36,7 +33,7 @@ const App = () => {
   }
 
   const toggleMetaTierDisplay = async (e) => {
-    //if should only be ran once!
+    //if statement should only be ran once!
     //if meta data was not retrieved initially
     if(!_meta_data_retrived){
       //disable buttons to not cause errors
@@ -52,40 +49,47 @@ const App = () => {
     setDisplayMeta(!_display_meta);
   }
 
-  async function fetchData(url){
-    const api_call = await fetch(url);
-    const data = await api_call.json();
-    return data;
+  async function postDataFromServer(url){
+    let payload = {"url": url}
+    let request = await fetch('/api', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    let jsonData = await request.json();
+    return jsonData;
   }
 
   async function fetchChallengerPlayers(){
-    const req_challenger_players = `/league/v1/challenger?api_key=${API_KEY}`;
-    return await fetchData(req_challenger_players); 
+    const req_challenger_players = `https://na1.api.riotgames.com/tft/league/v1/challenger?api_key=`;
+    return await postDataFromServer(req_challenger_players); 
   }
 
   async function fetchPlayerDataByName(name){
-    const get_player_request = `/summoner/v1/summoners/by-name/${name}?api_key=${API_KEY}`;
-    return await fetchData(get_player_request);
+    const get_player_request = `https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/${name}?api_key=`;
+    return await postDataFromServer(get_player_request);
   }
 
   async function fetchPlayerDataByID(id){
-    const req_player_by_id = `/summoner/v1/summoners/${id}?api_key=${API_KEY}`;
-    return await fetchData(req_player_by_id);
+    const req_player_by_id = `https://na1.api.riotgames.com/tft/summoner/v1/summoners/${id}?api_key=`;
+    return await postDataFromServer(req_player_by_id);
   }
 
   async function fetchPlayerRankDataByID(id){
-    const req_player_rank = `/league/v1/entries/by-summoner/${id}?api_key=${API_KEY}`;
-    return await fetchData(req_player_rank);
+    const req_player_rank = `https://na1.api.riotgames.com/tft/league/v1/entries/by-summoner/${id}?api_key=`;
+    return await postDataFromServer(req_player_rank);
   }
 
   async function fetchPlayerMatchIDsListByPID(puuid, count){
-    const req_player_matches = `/by-puuid/${puuid}/ids?count=${count}&api_key=${API_KEY}`;
-    return await fetchData(req_player_matches);
+    const req_player_matches = `https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/${puuid}/ids?count=${count}&api_key=`;
+    return await postDataFromServer(req_player_matches);
   }
 
   async function fetchMatchData(matchID){
-    const req_match = `/matches/${matchID}?api_key=${API_KEY}`;
-    return await fetchData(req_match);
+    const req_match = `https://americas.api.riotgames.com/tft/match/v1/matches/${matchID}?api_key=`;
+    return await postDataFromServer(req_match);
   }
 
   async function setReformatedMatches(listOfMatchIDs, playerPUUID){

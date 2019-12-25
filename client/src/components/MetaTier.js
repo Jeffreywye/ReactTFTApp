@@ -7,8 +7,8 @@ const MetaTier = (props) => {
 
     if (props.displayMeta){
         total = props.data.topFourPlayers;
-        topTraits = props.data.traits.slice(0,10);
-        topUnits = props.data.units.slice(0,10);
+        topTraits = props.data.traits.slice(0,20);
+        topUnits = props.data.units.slice(0,20);
     }
 
     return(
@@ -49,7 +49,7 @@ const MetaTier = (props) => {
             <div className="meta-data-comp d-flex flex-row flex-wrap">
                 
                 <div className="top-traits-sec flex-fill d-flex flex-column mx-1">
-                    <div className="top-traits-title text-center"><h3>Top 10 Traits</h3></div>
+                    <div className="top-traits-title text-center"><h3>Most Played Traits to Top Four</h3></div>
                     <table className="traits-table table table-striped table-dark">
                         <thead>
                             <tr>
@@ -77,7 +77,7 @@ const MetaTier = (props) => {
                 </div>
                 
                 <div className="top-units-sec flex-fill d-flex flex-column mx-1">
-                    <div className="top-units-title text-center"><h3>Top 10 Units</h3></div>
+                    <div className="top-units-title text-center"><h3>Most Played Units to Top Four</h3></div>
                     <table className="top-units table table-striped table-dark">
                         <thead>
                             <tr>
