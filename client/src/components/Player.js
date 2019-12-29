@@ -23,7 +23,7 @@ const Player = (props) => {
                         className="btn btn-dark flex-grow-1"
                         type="button"
                         onClick={props.displayMatchOnClick}>
-                        See Past 5 Matches
+                        See Past 10 Matches
                     </button>
                 </div>
             </div>

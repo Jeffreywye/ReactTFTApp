@@ -15,6 +15,7 @@ const App = () => {
   const [_disabled, setDisabled] = useState(false);
   const [_display_progress_bar, setDisplayProgressBar] = useState(false);
   const [_progress_percent, setProgressPercent] = useState(0);
+  const [_display_no_player_toast, setNoPlayerToast] = useState(false);
 
   var _search = "";
   
@@ -176,21 +177,24 @@ const App = () => {
     // fetch Player rank from API
     const rank_data = await fetchPlayerRankDataByID(player_data.id);
     // valid rank data is returned as an array
+
     // invalid requests for rank_data returns a json obj
     if (rank_data.length === 0 || !Array.isArray(rank_data) ){
       console.log("no ranked player");
+      setNoPlayerToast(true);
     }
 
     //valid rank player
     else {
       // fetch list of matchIDS given the amount and player puuid
-      let count = 5;
+      let count = 10;
       const matchIDS = await fetchPlayerMatchIDsListByPID(player_data.puuid, count);
 
       await setReformatedMatches(matchIDS, player_data.puuid);
       setMatchDisplayOff();
       setPlayerData(player_data);
       setRankData(rank_data[0]);
+      setNoPlayerToast(false);
     }
     document.getElementById("search-form").reset();
   }
@@ -429,32 +433,94 @@ const App = () => {
   // whenever a state or prop value changes
   return (
     <div className="App">
-      <SearchPlayer
-        onSubmit={getPlayerQuery}
-        disabled={_disabled}
-      />
       
-      { 
-      // render player component when _search is not null
-      _rank_data &&
-      <div className="container">
-        <Player
-          data = {_rank_data}
-          matches = {_list_of_matches}
-          display = {_display_matches}
-          displayMatchOnClick = {toggleMatchDisplay}
-        />
-      </div>
-      }
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div className="container">
+          <a className="navbar-brand nav-link js-scroll-trigger" href="#search">TFT APP</a>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarResponsive">
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <a className="nav-link js-scroll-trigger" href="#about">About</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link js-scroll-trigger" href="#player-search">Search Player</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link js-scroll-trigger" href="#meta-table">Meta</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+      <section id="about">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-8 mx-auto">
+              <h2 className="text-center">TFT APP</h2>
+              <p className="lead text-center">Find information of the current state of Riot's NA TFT Meta</p>
+              <ul>
+                <li>Search Ranked NA Players</li>
+                <li>Discover the most played traits to top four with in challenger lobbies</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <MetaTier
-        onClick={toggleMetaTierDisplay}
-        displayMeta = {_display_meta}
-        disabled={_disabled}
-        progress={_progress_percent}
-        displayProgress = {_display_progress_bar}
-        data={_tft_meta_data}
-      />
+      <section id="player-search">
+        <SearchPlayer
+          onSubmit={getPlayerQuery}
+          disabled={_disabled}
+        />
+        
+        {/* {
+        _display_no_player_toast &&
+        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+          <div className="toast" style="position: absolute; top: 0; right: 0;">
+            <div className="toast-header">
+              <strong className="mr-auto">Player not found</strong>
+              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="toast-body">
+              App only searches for NA players that have played at least one match of ranked TFT
+            </div>
+          </div>
+        </div>
+        } */}
+        
+        
+        { 
+        // render player component when _search is not null
+        _rank_data &&
+        <div className="container">
+          <Player
+            data = {_rank_data}
+            matches = {_list_of_matches}
+            display = {_display_matches}
+            displayMatchOnClick = {toggleMatchDisplay}
+          />
+        </div>
+        }
+      </section>
+      
+      <section id="meta-table">
+        <MetaTier
+          onClick={toggleMetaTierDisplay}
+          displayMeta = {_display_meta}
+          disabled={_disabled}
+          progress={_progress_percent}
+          displayProgress = {_display_progress_bar}
+          data={_tft_meta_data}
+        />
+      </section>
+
+      
     </div>
   );
 }
