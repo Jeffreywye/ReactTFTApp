@@ -1,10 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require('path');
 const request = require("request");
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 const API_KEY = process.env.API_KEY;
 const PORT = process.env.PORT || 5000;
