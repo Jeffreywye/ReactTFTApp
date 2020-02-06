@@ -17,6 +17,10 @@ function fetchData(url, callback){
             let data = JSON.parse(body);
             callback(data); 
         }
+        else{
+            let data = [];
+            callback(data);
+        }
     });
 }
 

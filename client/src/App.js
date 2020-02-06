@@ -15,7 +15,7 @@ const App = () => {
   const [_disabled, setDisabled] = useState(false);
   const [_display_progress_bar, setDisplayProgressBar] = useState(false);
   const [_progress_percent, setProgressPercent] = useState(0);
-  const [_display_no_player_toast, setNoPlayerToast] = useState(false);
+  const [_display_no_player_found, setNoPlayerFound] = useState(false);
 
   var _search = "";
   
@@ -177,11 +177,10 @@ const App = () => {
     // fetch Player rank from API
     const rank_data = await fetchPlayerRankDataByID(player_data.id);
     // valid rank data is returned as an array
-
     // invalid requests for rank_data returns a json obj
     if (rank_data.length === 0 || !Array.isArray(rank_data) ){
       console.log("no ranked player");
-      setNoPlayerToast(true);
+      setNoPlayerFound(true);
     }
 
     //valid rank player
@@ -194,7 +193,7 @@ const App = () => {
       setMatchDisplayOff();
       setPlayerData(player_data);
       setRankData(rank_data[0]);
-      setNoPlayerToast(false);
+      setNoPlayerFound(false);
     }
     document.getElementById("search-form").reset();
   }
@@ -465,6 +464,7 @@ const App = () => {
               <ul>
                 <li>Search Ranked NA Players</li>
                 <li>Discover the most played traits to top four with in challenger lobbies</li>
+                <li>Uses Riot Games API To recieve the latest in game data</li>
               </ul>
             </div>
           </div>
@@ -476,24 +476,14 @@ const App = () => {
           onSubmit={getPlayerQuery}
           disabled={_disabled}
         />
-        
-        {/* {
-        _display_no_player_toast &&
-        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
-          <div className="toast" style="position: absolute; top: 0; right: 0;">
-            <div className="toast-header">
-              <strong className="mr-auto">Player not found</strong>
-              <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div className="toast-body">
-              App only searches for NA players that have played at least one match of ranked TFT
-            </div>
-          </div>
+
+        {
+        // render if no player was found from the search
+        _display_no_player_found &&
+        <div>
+          <p className="font-wieght-bold text-danger text-center">No Ranked Player Found, try inputting "scarra" or "Krmx"</p>
         </div>
-        } */}
-        
+        }
         
         { 
         // render player component when _search is not null

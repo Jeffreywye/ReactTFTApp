@@ -10,9 +10,23 @@ body {
   background-color: #f8f9fa !important;
 }
 
+#about {
+  background-color: #445df1;
+}
+
+#meta-table {
+  background-color: #445df1;
+}
+
 section {
-  margin: 15rem 0;
-  padding-top: 4rem;
+  padding: 15rem 0;
+  /* padding-top: 4rem; */
+}
+
+@media screen and (max-width: 768px){
+  section {
+    margin: 15rem 0;
+  }
 }
 
 code {

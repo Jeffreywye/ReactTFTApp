@@ -39,7 +39,7 @@ const MetaTier = (props) => {
                     </div> 
                 </div>
                 <div className="align-self-center text-center">
-                    Please be patient this should only take about 3 mins. Other functionality disabled to maintain system
+                    Please be patient this should only take about 5 mins. Other functionality disabled to maintain system
                 </div>
             </div>
             }
